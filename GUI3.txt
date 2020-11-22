@@ -1,0 +1,43 @@
+    def setOutput(self):
+        groupbox = QGroupBox('Output')
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.ouputTable())
+
+        hbox = QHBoxLayout()
+        btn1 = QPushButton('More')
+        btn2 = QPushButton('Save')
+        btn1.clicked.connect(self.moreClicked)
+        btn2.clicked.connect(self.saveClicked)
+        hbox.addStretch(2)
+        hbox.addWidget(btn1)
+        hbox.addWidget(btn2)
+
+        vbox.addLayout(hbox)
+
+        groupbox.setLayout(vbox)
+
+        return groupbox
+
+    def moreClicked(self):
+        print("more")
+        
+    def saveClicked(self):
+        print("save")
+
+    def ouputTable(self):
+        box = QGroupBox()
+
+        table = QTableWidget()
+        table.setRowCount(1)
+        table.setColumnCount(3)
+        column_headers = ['Test Action', 'Expected Result', 'Pass/Fail']
+        table.setHorizontalHeaderLabels(column_headers)
+        table.setColumnWidth(0, 260)
+        table.setColumnWidth(1, 281)
+        table.setColumnWidth(2, 80)
+        vbox = QVBoxLayout()
+        vbox.addWidget(table)
+        box.setLayout(vbox)
+
+        return box
