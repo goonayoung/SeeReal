@@ -8,7 +8,7 @@ class TestCase1(TestCase):
         pass
     
     def test_checkSimilarity(self):
-        b=SeeReal_KAI_.Similarity().listToVector(['data','none'])
+        b=SeeReal_KAI_.Similarity().listToVector(['data is goo','none was bad'])
         c=SeeReal_KAI_.Similarity().vectorToDense(b)
         d=SeeReal_KAI_.Similarity().checkSimilarity(c)
         
