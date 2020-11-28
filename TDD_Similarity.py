@@ -8,11 +8,11 @@ class TestCase1(TestCase):
         pass
     
     def test_checkSimilarity(self):
-        b=SeeReal_KAI_.Similarity().listToVector(['data frame','none data frame'])
+        b=SeeReal_KAI_.Similarity().listToVector(['data','none'])
         c=SeeReal_KAI_.Similarity().vectorToDense(b)
         d=SeeReal_KAI_.Similarity().checkSimilarity(c)
         
-        self.assertEqual(d,0.7092972666062739)
+        self.assertEqual(d,0.0)
         
         
 if __name__ == '__main__':
