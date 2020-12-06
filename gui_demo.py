@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QGroupBox, QRadioButton, QCo
 , QTableWidgetItem, QMessageBox, QTextEdit, QDialog)
 import os
 import openpyxl
-
+from openpyxl import load_workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -357,6 +358,8 @@ class MyApp(QWidget):
         hbox1.addWidget(self.cb2)
         self.groupbox1.setLayout(hbox1)
         
+        self.cb2.setCurrentText('3.2.14')
+        
         self.SearchR11 = int(self.cb1.currentText()[0])
         self.SearchR12 = int(self.cb1.currentText()[2])
         self.SearchR13 = int(self.cb1.currentText()[4:])
@@ -375,15 +378,15 @@ class MyApp(QWidget):
         hbox2.addWidget(label2)
         self.groupbox2.setLayout(hbox2)
         
-        btn = QPushButton('Set',self)
-        btn.setCheckable(True)
-        btn.clicked.connect(self.Set_clicked)
+        self.setBtn = QPushButton('Set',self)
+        self.setBtn.setCheckable(True)
+        self.setBtn.clicked.connect(self.Set_clicked)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.groupbox1)
         hbox.addWidget(self.groupbox2)
         hbox.addStretch(1)
-        hbox.addWidget(btn)
+        hbox.addWidget(self.setBtn)
         groupbox.setLayout(hbox)
         
 
@@ -467,10 +470,10 @@ class MyApp(QWidget):
         self.table.setColumnWidth(3, 80)
 
         hbox3 = QHBoxLayout()
-        btn = QPushButton('Search')
-        btn.clicked.connect(self.Search_clicked)
+        self.searchBtn = QPushButton('Search')
+        self.searchBtn.clicked.connect(self.Search_clicked)
         hbox3.addStretch(2)
-        hbox3.addWidget(btn)
+        hbox3.addWidget(self.searchBtn)
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox1)
@@ -509,6 +512,7 @@ class MyApp(QWidget):
     def Search_clicked(self):
         print("Search")
         self.moreCnt = 0
+        self.loopCnt = 0;
         outputnum = self.outputnum
         row = self.table.rowCount()
         column = self.table.columnCount()
@@ -524,6 +528,9 @@ class MyApp(QWidget):
                 inputData.append(text)
 
         print(inputData)
+        self.testInput1 = inputData[0]
+        self.testInput2 = inputData[1]
+        self.testInput3 = inputData[2]
 
         if (inputData == ['','','',''] or inputData == ['', '', '']):
             self.inputIsEmpty()
@@ -533,20 +540,14 @@ class MyApp(QWidget):
             if (column == 3):
                 similarityClass = ExternalSimilarity()
                 tcdf = pd.read_excel(os.getcwd()+'/external_testcase.xlsx')
-                self.outputTable.setRowCount(1)
-                self.outputTable.setColumnCount(3)
             elif (column == 4):
                 similarityClass = InternalSimilarity()
                 tcdf = pd.read_excel(os.getcwd()+'/internal_testcase.xlsx')
-                self.outputTable.setRowCount(1)
-                self.outputTable.setColumnCount(3)
+                self.testInput4 = inputData[3]
+                
+            self.outputTable.setRowCount(1)
+            self.outputTable.setColumnCount(3)
             
-            self.rowCnt = len(tcdf.index)
-            print("rowCnt = ", self.rowCnt)
-            if(self.outputnum > self.rowCnt):
-                outputnum = self.rowCnt
-
-
 
             reqSim = similarityClass.checkREQSimilarity(inputData)
             tcSim = similarityClass.checkTCSimilarity(inputData)
@@ -556,28 +557,34 @@ class MyApp(QWidget):
                                             'Req Index', 'TC Index'],
                        how="outer", right_index=False)
             df2 = df2.fillna("-")
-
+            print("콜럼명 : ", list(df2))
             self.arr = df2.values
-            for x in range(0, outputnum, 1):
+            self.x = 0;
+            self.rangedTC = []
+            
+            for x in range(0, len(df2.index), 1):
                 arr2 = self.arr[x][:]
-                TestAction = arr2[7]
-                ExpectedResult = arr2[8]
-                PassFail = arr2[9]
+                if(arr2[0]>=self.SearchR11 and arr2[1]>=self.SearchR12 and arr2[2]>=self.SearchR13 and arr2[0]<=self.SearchR21 and arr2[1]<=self.SearchR22 and arr2[2]<= self.SearchR23):
+                    self.rangedTC.append(arr2)
+            print("arr3 = ", self.rangedTC[0][7])
+            
+            if(self.outputnum > len(self.rangedTC)):
+                outputnum = len(self.rangedTC)
+                    
+            for self.x in range(0, outputnum, 1):
+                TestAction = self.rangedTC[self.x][7]
+                ExpectedResult = self.rangedTC[self.x][8]
+                PassFail = self.rangedTC[self.x][9]
                 rowPosition = self.outputTable.rowCount()
                 if(rowPosition < outputnum):
                     self.outputTable.insertRow(rowPosition)
-                self.outputTable.setItem(x, 0, QTableWidgetItem(TestAction))
-                self.outputTable.setItem(x, 1, QTableWidgetItem(ExpectedResult))
-                self.outputTable.setItem(x, 2, QTableWidgetItem(PassFail))
-
-        return inputData
+                self.outputTable.setItem(self.x, 0, QTableWidgetItem(TestAction))
+                self.outputTable.setItem(self.x, 1, QTableWidgetItem(ExpectedResult))
+                self.outputTable.setItem(self.x, 2, QTableWidgetItem(PassFail))
+                   
 
     def inputIsEmpty(self):
         QMessageBox.warning(self, '경고', '입력 table에 값을 입력해주십시오.',)
-
-
-        
-
 
     def Output(self):
         groupbox = QGroupBox('Output')
@@ -586,13 +593,13 @@ class MyApp(QWidget):
         vbox.addWidget(self.OuputTable())
 
         hbox = QHBoxLayout()
-        btn1 = QPushButton('More')
-        btn2 = QPushButton('Save')
-        btn1.clicked.connect(self.More_clicked)
-        btn2.clicked.connect(self.Save_clicked) 
+        self.moreBtn = QPushButton('More')
+        self.saveBtn = QPushButton('Save')
+        self.moreBtn.clicked.connect(self.More_clicked)
+        self.saveBtn.clicked.connect(self.Save_clicked) 
         hbox.addStretch(2)
-        hbox.addWidget(btn1)
-        hbox.addWidget(btn2)
+        hbox.addWidget(self.moreBtn)
+        hbox.addWidget(self.saveBtn)
 
         vbox.addLayout(hbox)
 
@@ -602,31 +609,45 @@ class MyApp(QWidget):
 
     def More_clicked(self):
         print("more")
-        self.moreCnt = self.moreCnt + 1
-        totalCnt = self.outputnum + self.moreCnt - 1 
+        self.moreCnt = self.moreCnt + 1  
+        self.totalCnt = self.outputnum + self.moreCnt - 1
         
-        if(totalCnt >= self.rowCnt):
+        if(self.totalCnt >= len(self.rangedTC)):
             QMessageBox.warning(self, '경고', '모든 testcase를 표시하였습니다.',)
             return 0
         
-        arr2 = self.arr[totalCnt][:]
-        TestAction = arr2[7]
-        ExpectedResult = arr2[8]
-        PassFail = arr2[9]
-        print("Test Action = ", TestAction)
+        TestAction = self.rangedTC[self.totalCnt][7]
+        ExpectedResult = self.rangedTC[self.totalCnt][8]
+        PassFail = self.rangedTC[self.totalCnt][9]
 
+        rowPosition = self.outputTable.rowCount()
             
         
-        rowPosition = self.outputTable.rowCount()
-        
         self.outputTable.insertRow(rowPosition)
-        self.outputTable.setItem(totalCnt, 0, QTableWidgetItem(TestAction))
-        self.outputTable.setItem(totalCnt, 1, QTableWidgetItem(ExpectedResult))
-        self.outputTable.setItem(totalCnt, 2, QTableWidgetItem(PassFail))
+        self.outputTable.setItem(self.totalCnt, 0, QTableWidgetItem(TestAction))
+        self.outputTable.setItem(self.totalCnt, 1, QTableWidgetItem(ExpectedResult))
+        self.outputTable.setItem(self.totalCnt, 2, QTableWidgetItem(PassFail))    
         
     def Save_clicked(self):
+
         print("save")
-        SaveWindow(self)   
+        TestAction = []
+        ExpectedResult = []
+        PassFail = []
+
+        for x in range(0, self.totalCnt+1, 1):            
+            text1 = self.outputTable.item(x, 0).text() 
+            text2 = self.outputTable.item(x, 1).text()
+            text3 = self.outputTable.item(x, 2).text()
+            TestAction.append(text1)
+            ExpectedResult.append(text2)
+            PassFail.append(text3)         
+        print("TestAction = ", TestAction)
+        print("Expected Result = ", ExpectedResult)
+        print("PAssFail = ", PassFail)
+        df = pd.DataFrame({'Test Action': TestAction, 'Expected Result': ExpectedResult, 'Pass/Fail' : PassFail})       
+        print("df = ", df)
+        SaveWindow(self, df)
 
     def OuputTable(self):
         box = QGroupBox()
@@ -646,7 +667,8 @@ class MyApp(QWidget):
         return box
 
 class SaveWindow(QDialog):
-    def __init__(self,parent):
+    def __init__(self,parent, df):
+        self.df = df
         super(SaveWindow,self).__init__(parent)
         self.save()
         self.show()
@@ -659,9 +681,6 @@ class SaveWindow(QDialog):
         lbl2 = QLabel('저장할 파일 이름')
         self.qle2 = QLineEdit()
 
-        lbl3 = QLabel('추가할 내용')
-        self.te = QTextEdit()
-
         btn = QPushButton('파일 생성')
         btn.clicked.connect(self.saveFile_btn)
 
@@ -670,8 +689,6 @@ class SaveWindow(QDialog):
         vbox.addWidget(self.qle1)
         vbox.addWidget(lbl2)
         vbox.addWidget(self.qle2)
-        vbox.addWidget(lbl3)
-        vbox.addWidget(self.te)
         vbox.addWidget(btn)
 
         self.setLayout(vbox)
@@ -681,7 +698,8 @@ class SaveWindow(QDialog):
         
         
     def saveFile_btn(self):
-        if len(self.qle1.text()) == 0 or len(self.qle2.text()) == 0 or len(self.te.toPlainText()) == 0:
+        
+        if len(self.qle1.text()) == 0 or len(self.qle2.text()) == 0 :
             return
         directory = self.qle1.text() + '/'
         if os.path.isdir(directory):
@@ -692,20 +710,16 @@ class SaveWindow(QDialog):
             return
         wb = openpyxl.Workbook()
         name = self.qle2.text() + '.xlsx'
-        content = self.te.toPlainText()
+        
         address = directory+name
         ws=wb.create_sheet('Sheet 1')
         ws=wb.active
-        ws['A1']=content
+        for r in dataframe_to_rows(self.df, index=False, header=True):
+            ws.append(r)
         wb.save(address)
         QMessageBox.about(self, "message", "파일이 저장되었습니다")
         
         self.close()
-
-
-
-
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
