@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-
 class Similarity:
 
     def listToVector(self, reqList):
@@ -103,9 +102,6 @@ class Similarity:
     def resultSimilarity(self, reqSimilarity, tcSimilarity):
 
         df = pd.merge(reqSimilarity, tcSimilarity, on = ['Range1', 'Range2', 'Range3', 'Req Index'], how = "outer", right_index = False)
-    
-
-
         df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
         df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
         df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
@@ -116,7 +112,6 @@ class Similarity:
         
         return resultSimilarity
         
-
 class InternalSimilarity(Similarity):
     def checkREQSimilarity(self, reqArr):
         super().checkREQSimilarity(reqArr)
@@ -149,8 +144,7 @@ class InternalSimilarity(Similarity):
             weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
             weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
             weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
-
-            
+     
             sim.append([])
             sim[x].append(arr[0])
             sim[x].append(arr[1])
@@ -208,7 +202,6 @@ class InternalSimilarity(Similarity):
          
         return tcSimilarity
 
-    
 class ExternalSimilarity(Similarity):
     def checkREQSimilarity(self, reqArr):
         super().checkREQSimilarity(reqArr)
@@ -245,8 +238,7 @@ class ExternalSimilarity(Similarity):
             sim[x].append(weightSum)
             
             x = x + 1
-            
-            
+
         sim=np.array(sim)
         reqSimilarity = pd.DataFrame(sim, columns= ["Range1", "Range2", "Range3", "Req Index", "REQ Similarity"])
 
@@ -293,8 +285,6 @@ class ExternalSimilarity(Similarity):
         tcSimilarity = tcSimilarity.fillna(0)
          
         return tcSimilarity
-
-
 
 class MyApp(QWidget):
 
@@ -382,7 +372,6 @@ class MyApp(QWidget):
         hbox.addWidget(self.setBtn)
         groupbox.setLayout(hbox)
         
-
         return groupbox
 
     def Set_clicked(self):       
@@ -408,8 +397,6 @@ class MyApp(QWidget):
             self.SearchR22 = 2
             self.SearchR23 = 14
             
-            
-        
         if(self.groupbox2.isChecked()):
             try:
                 self.outputnum = int(self.qle3.text())
@@ -458,12 +445,10 @@ class MyApp(QWidget):
         self.searchBtn.clicked.connect(self.Search_clicked)
         hbox3.addStretch(2)
         hbox3.addWidget(self.searchBtn)
-
         vbox = QVBoxLayout()
         vbox.addLayout(hbox1)
         vbox.addLayout(Tableinputbox)
         vbox.addLayout(hbox3)
-
         groupbox.setLayout(vbox)
         groupbox.setFixedHeight(200)
 
@@ -497,9 +482,8 @@ class MyApp(QWidget):
         outputnum = self.outputnum
         row = self.table.rowCount()
         column = self.table.columnCount()
-        
-                    
         inputData = []
+        
         for x in range(0, row, 1):
             for y in range(0, column, 1):
                 if self.table.item(x,y) is None:
@@ -527,12 +511,9 @@ class MyApp(QWidget):
                 
             self.outputTable.setRowCount(1)
             self.outputTable.setColumnCount(3)
-            
-
             reqSim = similarityClass.checkREQSimilarity(inputData)
             tcSim = similarityClass.checkTCSimilarity(inputData)
             resultSim = similarityClass.resultSimilarity(reqSim, tcSim)
-
             df2 = pd.merge(resultSim, tcdf, on=['Range1', 'Range2', 'Range3',
                                             'Req Index', 'TC Index'],
                        how="outer", right_index=False)
@@ -560,16 +541,13 @@ class MyApp(QWidget):
                 self.outputTable.setItem(self.x, 1, QTableWidgetItem(ExpectedResult))
                 self.outputTable.setItem(self.x, 2, QTableWidgetItem(PassFail))
                    
-
     def inputIsEmpty(self):
         QMessageBox.warning(self, '경고', '입력 table에 값을 입력해주십시오.',)
 
     def Output(self):
         groupbox = QGroupBox('Output')
-
         vbox = QVBoxLayout()
         vbox.addWidget(self.OuputTable())
-
         hbox = QHBoxLayout()
         self.moreBtn = QPushButton('More')
         self.saveBtn = QPushButton('Save')
@@ -578,9 +556,7 @@ class MyApp(QWidget):
         hbox.addStretch(2)
         hbox.addWidget(self.moreBtn)
         hbox.addWidget(self.saveBtn)
-
         vbox.addLayout(hbox)
-
         groupbox.setLayout(vbox)
 
         return groupbox
@@ -596,10 +572,8 @@ class MyApp(QWidget):
         TestAction = self.rangedTC[self.totalCnt][7]
         ExpectedResult = self.rangedTC[self.totalCnt][8]
         PassFail = self.rangedTC[self.totalCnt][9]
-
         rowPosition = self.outputTable.rowCount()
-            
-        
+                
         self.outputTable.insertRow(rowPosition)
         self.outputTable.setItem(self.totalCnt, 0, QTableWidgetItem(TestAction))
         self.outputTable.setItem(self.totalCnt, 1, QTableWidgetItem(ExpectedResult))
@@ -665,7 +639,6 @@ class SaveWindow(QDialog):
         vbox.addWidget(btn)
 
         self.setLayout(vbox)
-
         self.setWindowTitle('Save')
         self.setGeometry(100, 100, 250, 300)
         
@@ -676,6 +649,7 @@ class SaveWindow(QDialog):
             return
         directory = self.qle1.text() + '/'
         if os.path.isdir(directory):
+            pass
         else:
             QMessageBox.about(self, "message", "적합하지 않은 주소입니다")
             return
@@ -691,6 +665,8 @@ class SaveWindow(QDialog):
         QMessageBox.about(self, "message", "파일이 저장되었습니다")
         
         self.close()
+        
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
