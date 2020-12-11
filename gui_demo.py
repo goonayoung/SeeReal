@@ -1,10 +1,9 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QGroupBox, QRadioButton, QComboBox
 , QPushButton, QVBoxLayout, QHBoxLayout, QDesktopWidget, QLineEdit, QLabel, QTableWidget
-, QTableWidgetItem, QMessageBox, QTextEdit, QDialog)
+, QTableWidgetItem, QMessageBox, QDialog)
 import os
 import openpyxl
-from openpyxl import load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 import numpy as np
 import pandas as pd
@@ -96,17 +95,23 @@ class Similarity:
         return keyWord
         
     def checkREQSimilarity(self, reqArr):
-        print("")
+        pass
         
     def checkTCSimilarity(self, reqArr):
-        print("")
+        pass
         
     def resultSimilarity(self, reqSimilarity, tcSimilarity):
-        print("")
-        print("<Result Similarity>")
+
         df = pd.merge(reqSimilarity, tcSimilarity, on = ['Range1', 'Range2', 'Range3', 'Req Index'], how = "outer", right_index = False)
     
+<<<<<<< HEAD
         df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
+=======
+        # 입력요구사항-요구사항 유사도 / 입력요구사항 - 테스트케이스 유사도
+        # 비교 가중치
+        # 가중치 합 = 1
+        df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
+>>>>>>> main
     
         resultSimilarity = df[["Range1", "Range2", "Range3", "Req Index", "TC Index", "Result Similarity"]]
         resultSimilarity = resultSimilarity.sort_values("Result Similarity", ascending = False)
@@ -142,7 +147,14 @@ class InternalSimilarity(Similarity):
             else:
                 simArr.append(0)
             
+<<<<<<< HEAD
             weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
+=======
+            # Internal) 입력요구사항-요구사항 비교 가중치
+            # 가중치 합 = 1
+            # Input Source / Signal Description / Type / Packet ID
+            weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
+>>>>>>> main
             
             sim.append([])
             sim[x].append(arr[0])
@@ -225,7 +237,14 @@ class ExternalSimilarity(Similarity):
                 simNum = self.checkSimilarity(denseMatrix)
                 simArr.append(simNum) 
             
+<<<<<<< HEAD
             weightSum = 0.3*simArr[0] + 0.2*simArr[1] + 0.5*simArr[2]
+=======
+            # External) 입력요구사항-요구사항 비교 가중치
+            # 가중치 합 = 1
+            # Input Source / Signal Description / ICD Signal Description
+            weightSum = 0.3333*simArr[0] + 0.1667*simArr[1] + 0.5*simArr[2]
+>>>>>>> main
             
             sim.append([])
             sim[x].append(arr[0])
@@ -390,12 +409,7 @@ class MyApp(QWidget):
                 print("범위를 다시 설정하세요.")
                 QMessageBox.about(self, '범위설정 오류', '범위를 다시 설정해주세요.')
             else:
-                print("Search Range1 is : " ,self.SearchR11)
-                print("Search Range1 is : " ,self.SearchR12)
-                print("Search Range1 is : " ,self.SearchR13)
-                print("Search Range2 is : ", self.SearchR21)
-                print("Search Range2 is : ", self.SearchR22)
-                print("Search Range2 is : ", self.SearchR23)
+                pass
         else:
             self.SearchR11 = 3
             self.SearchR12 = 2
@@ -404,26 +418,23 @@ class MyApp(QWidget):
             self.SearchR22 = 2
             self.SearchR23 = 14
             
-            print("Search Range1 is : " ,self.SearchR11)
-            print("Search Range1 is : " ,self.SearchR12)
-            print("Search Range1 is : " ,self.SearchR13)
-            print("Search Range2 is : ", self.SearchR21)
-            print("Search Range2 is : ", self.SearchR22)
-            print("Search Range2 is : ", self.SearchR23)
             
         
         if(self.groupbox2.isChecked()):
             try:
                 self.outputnum = int(self.qle3.text())
-                print("outputnum is : " , self.outputnum)
             except:
                 QMessageBox.about(self, '결과개수오류','숫자를 입력해 주세요.')
+                self.outputnum = ''
         else:
             self.qle3.setText('1')
             self.outputnum = int(self.qle3.text())
-            print("outputnum is : " , self.outputnum)
+            
+        if (isinstance(self.SearchR11, int) & isinstance(self.outputnum, int)):
+            QMessageBox.about(self, 'setting', '설정 되었습니다.')
+            
         
-        print('Set')
+        
 
 
     def Input(self):
@@ -469,7 +480,6 @@ class MyApp(QWidget):
         return groupbox
 
     def I_clicked(self):
-        print('internal')
         self.table.clear()
         self.table.setFixedHeight(90)
         self.table.setRowCount(1)
@@ -481,7 +491,6 @@ class MyApp(QWidget):
         self.table.setColumnWidth(3, 80)
 
     def E_clicked(self):
-        print('external')
         self.table.clear()
         self.table.setFixedHeight(90)
         self.table.setRowCount(1)
@@ -493,7 +502,6 @@ class MyApp(QWidget):
         
         
     def Search_clicked(self):
-        print("Search")
         self.moreCnt = 0
         self.loopCnt = 0;
         outputnum = self.outputnum
@@ -510,7 +518,6 @@ class MyApp(QWidget):
                     text = self.table.item(x, y).text()
                 inputData.append(text)
 
-        print(inputData)
         self.testInput1 = inputData[0]
         self.testInput2 = inputData[1]
         self.testInput3 = inputData[2]
@@ -540,7 +547,6 @@ class MyApp(QWidget):
                                             'Req Index', 'TC Index'],
                        how="outer", right_index=False)
             df2 = df2.fillna("-")
-            print("콜럼명 : ", list(df2))
             self.arr = df2.values
             self.x = 0;
             self.rangedTC = []
@@ -549,7 +555,6 @@ class MyApp(QWidget):
                 arr2 = self.arr[x][:]
                 if(arr2[0]>=self.SearchR11 and arr2[1]>=self.SearchR12 and arr2[2]>=self.SearchR13 and arr2[0]<=self.SearchR21 and arr2[1]<=self.SearchR22 and arr2[2]<= self.SearchR23):
                     self.rangedTC.append(arr2)
-            print("arr3 = ", self.rangedTC[0][7])
             
             if(self.outputnum > len(self.rangedTC)):
                 outputnum = len(self.rangedTC)
@@ -591,7 +596,6 @@ class MyApp(QWidget):
         return groupbox
 
     def More_clicked(self):
-        print("more")
         self.moreCnt = self.moreCnt + 1  
         self.totalCnt = self.outputnum + self.moreCnt - 1
         
@@ -613,7 +617,6 @@ class MyApp(QWidget):
         
     def Save_clicked(self):
 
-        print("save")
         TestAction = []
         ExpectedResult = []
         PassFail = []
@@ -625,11 +628,8 @@ class MyApp(QWidget):
             TestAction.append(text1)
             ExpectedResult.append(text2)
             PassFail.append(text3)         
-        print("TestAction = ", TestAction)
-        print("Expected Result = ", ExpectedResult)
-        print("PAssFail = ", PassFail)
         df = pd.DataFrame({'Test Action': TestAction, 'Expected Result': ExpectedResult, 'Pass/Fail' : PassFail})       
-        print("df = ", df)
+
         SaveWindow(self, df)
 
     def OuputTable(self):
