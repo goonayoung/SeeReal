@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QGroupBox, QRadioButton, QCo
 , QTableWidgetItem, QMessageBox, QDialog)
 import os
 import openpyxl
+from PyQt5 import QtGui
 from openpyxl.utils.dataframe import dataframe_to_rows
 import numpy as np
 import pandas as pd
@@ -104,11 +105,6 @@ class Similarity:
 
         df = pd.merge(reqSimilarity, tcSimilarity, on = ['Range1', 'Range2', 'Range3', 'Req Index'], how = "outer", right_index = False)
     
-
-
-        df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
-        df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
-        df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
         df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
     
         resultSimilarity = df[["Range1", "Range2", "Range3", "Req Index", "TC Index", "Result Similarity"]]
@@ -144,13 +140,9 @@ class InternalSimilarity(Similarity):
                 simArr.append(1)
             else:
                 simArr.append(0)
-            
-            weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
-            weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
-            weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
-            weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
 
-            
+            weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
+     
             sim.append([])
             sim[x].append(arr[0])
             sim[x].append(arr[1])
@@ -232,9 +224,6 @@ class ExternalSimilarity(Similarity):
                 simNum = self.checkSimilarity(denseMatrix)
                 simArr.append(simNum) 
 
-            weightSum = 0.3*simArr[0] + 0.2*simArr[1] + 0.5*simArr[2]
-            weightSum = 0.3333*simArr[0] + 0.1667*simArr[1] + 0.5*simArr[2]
-            weightSum = 0.3*simArr[0] + 0.2*simArr[1] + 0.5*simArr[2]
             weightSum = 0.3333*simArr[0] + 0.1667*simArr[1] + 0.5*simArr[2]
             
             sim.append([])
@@ -492,6 +481,8 @@ class MyApp(QWidget):
         
         
     def Search_clicked(self):
+        QMessageBox.about(self, "message", "유사성이 없는 테스트케이스는 빨간색으로 표시됩니다.")
+        
         self.moreCnt = 0
         self.loopCnt = 0
         outputnum = self.outputnum
@@ -559,6 +550,9 @@ class MyApp(QWidget):
                 self.outputTable.setItem(self.x, 0, QTableWidgetItem(TestAction))
                 self.outputTable.setItem(self.x, 1, QTableWidgetItem(ExpectedResult))
                 self.outputTable.setItem(self.x, 2, QTableWidgetItem(PassFail))
+                if(self.rangedTC[self.x][5] == 0):
+                    for j in range(self.outputTable.columnCount()):
+                        self.outputTable.item(self.x, j).setBackground(QtGui.QColor('red'))
                    
 
     def inputIsEmpty(self):
@@ -604,6 +598,10 @@ class MyApp(QWidget):
         self.outputTable.setItem(self.totalCnt, 0, QTableWidgetItem(TestAction))
         self.outputTable.setItem(self.totalCnt, 1, QTableWidgetItem(ExpectedResult))
         self.outputTable.setItem(self.totalCnt, 2, QTableWidgetItem(PassFail))    
+        
+        if(self.rangedTC[self.totalCnt][5] == 0):
+            for j in range(self.outputTable.columnCount()):
+                self.outputTable.item(self.totalCnt, j).setBackground(QtGui.QColor('red'))  
         
     def Save_clicked(self):
 
