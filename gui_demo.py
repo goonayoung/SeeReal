@@ -104,14 +104,10 @@ class Similarity:
 
         df = pd.merge(reqSimilarity, tcSimilarity, on = ['Range1', 'Range2', 'Range3', 'Req Index'], how = "outer", right_index = False)
     
-<<<<<<< HEAD
-        # 입력요구사항-요구사항 유사도 / 입력요구사항 - 테스트케이스 유사도
-        # 비교 가중치
-        # 가중치 합 = 1
-        df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
-=======
+
         df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
->>>>>>> origin/nayoung
+        df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
+
     
         resultSimilarity = df[["Range1", "Range2", "Range3", "Req Index", "TC Index", "Result Similarity"]]
         resultSimilarity = resultSimilarity.sort_values("Result Similarity", ascending = False)
@@ -147,14 +143,10 @@ class InternalSimilarity(Similarity):
             else:
                 simArr.append(0)
             
-<<<<<<< HEAD
-            # Internal) 입력요구사항-요구사항 비교 가중치
-            # 가중치 합 = 1
-            # Input Source / Signal Description / Type / Packet ID
-            weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
-=======
+
             weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
->>>>>>> origin/nayoung
+            weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
+
             
             sim.append([])
             sim[x].append(arr[0])
@@ -237,14 +229,9 @@ class ExternalSimilarity(Similarity):
                 simNum = self.checkSimilarity(denseMatrix)
                 simArr.append(simNum) 
             
-<<<<<<< HEAD
-            # External) 입력요구사항-요구사항 비교 가중치
-            # 가중치 합 = 1
-            # Input Source / Signal Description / ICD Signal Description
-            weightSum = 0.3333*simArr[0] + 0.1667*simArr[1] + 0.5*simArr[2]
-=======
             weightSum = 0.3*simArr[0] + 0.2*simArr[1] + 0.5*simArr[2]
->>>>>>> origin/nayoung
+            weightSum = 0.3333*simArr[0] + 0.1667*simArr[1] + 0.5*simArr[2]
+
             
             sim.append([])
             sim[x].append(arr[0])
@@ -406,7 +393,6 @@ class MyApp(QWidget):
             self.SearchR23 = int(self.cb2.currentText()[4:])
 
             if(self.SearchR13>self.SearchR23):
-                print("범위를 다시 설정하세요.")
                 QMessageBox.about(self, '범위설정 오류', '범위를 다시 설정해주세요.')
             else:
                 pass
@@ -503,7 +489,7 @@ class MyApp(QWidget):
         
     def Search_clicked(self):
         self.moreCnt = 0
-        self.loopCnt = 0;
+        self.loopCnt = 0
         outputnum = self.outputnum
         row = self.table.rowCount()
         column = self.table.columnCount()
@@ -548,7 +534,7 @@ class MyApp(QWidget):
                        how="outer", right_index=False)
             df2 = df2.fillna("-")
             self.arr = df2.values
-            self.x = 0;
+            self.x = 0
             self.rangedTC = []
             
             for x in range(0, len(df2.index), 1):
@@ -686,9 +672,7 @@ class SaveWindow(QDialog):
             return
         directory = self.qle1.text() + '/'
         if os.path.isdir(directory):
-            print('적합한 주소입니다')
         else:
-            print('파일 경로가 존재하지 않습니다.')
             QMessageBox.about(self, "message", "적합하지 않은 주소입니다")
             return
         wb = openpyxl.Workbook()
