@@ -676,6 +676,7 @@ class SaveWindow(QDialog):
             return
         directory = self.qle1.text() + '/'
         if os.path.isdir(directory):
+            pass
         else:
             QMessageBox.about(self, "message", "적합하지 않은 주소입니다")
             return
