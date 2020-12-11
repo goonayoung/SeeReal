@@ -106,21 +106,10 @@ class Similarity:
         print("<Result Similarity>")
         df = pd.merge(reqSimilarity, tcSimilarity, on = ['Range1', 'Range2', 'Range3', 'Req Index'], how = "outer", right_index = False)
     
-        # 입력요구사항-요구사항 유사도 / 입력요구사항 - 테스트케이스 유사도
-        # 비교 가중치
-        # 가중치 합 = 1
         df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
     
         resultSimilarity = df[["Range1", "Range2", "Range3", "Req Index", "TC Index", "Result Similarity"]]
         resultSimilarity = resultSimilarity.sort_values("Result Similarity", ascending = False)
-        
-        # 엑셀파일로 저장하는 코드
-        #resultSimilarity.to_excel('C:/Users/ghj12/Desktop/2020 2학기/소개론/KAI_1123/resultSim.xlsx', sheet_name = 'Sheet1', 
-        #    header = True,
-        #    index = False, 
-        #    startrow = 0, 
-        #    startcol = 0, 
-        #    )
         
         return resultSimilarity
         
@@ -153,9 +142,6 @@ class InternalSimilarity(Similarity):
             else:
                 simArr.append(0)
             
-            # Internal) 입력요구사항-요구사항 비교 가중치
-            # 가중치 합 = 1
-            # Input Source / Signal Description / Type / Packet ID
             weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
             
             sim.append([])
@@ -239,9 +225,6 @@ class ExternalSimilarity(Similarity):
                 simNum = self.checkSimilarity(denseMatrix)
                 simArr.append(simNum) 
             
-            # External) 입력요구사항-요구사항 비교 가중치
-            # 가중치 합 = 1
-            # Input Source / Signal Description / ICD Signal Description
             weightSum = 0.3*simArr[0] + 0.2*simArr[1] + 0.5*simArr[2]
             
             sim.append([])
