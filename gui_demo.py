@@ -105,9 +105,11 @@ class Similarity:
         df = pd.merge(reqSimilarity, tcSimilarity, on = ['Range1', 'Range2', 'Range3', 'Req Index'], how = "outer", right_index = False)
     
 
+
         df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
         df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
-
+        df['Result Similarity'] = 0.6*df["REQ Similarity"] + 0.4*df["TC Similarity"]
+        df['Result Similarity'] = 0.6667*df["REQ Similarity"] + 0.3333*df["TC Similarity"]
     
         resultSimilarity = df[["Range1", "Range2", "Range3", "Req Index", "TC Index", "Result Similarity"]]
         resultSimilarity = resultSimilarity.sort_values("Result Similarity", ascending = False)
@@ -143,7 +145,8 @@ class InternalSimilarity(Similarity):
             else:
                 simArr.append(0)
             
-
+            weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
+            weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
             weightSum = 0.25*simArr[0] + 0.2*simArr[1] + 0.05*simArr[2] + 0.5*simArr[3]
             weightSum = 0.2727*simArr[0] + 0.1818*simArr[1] + 0.091*simArr[2] + 0.4545*simArr[3]
 
@@ -228,10 +231,11 @@ class ExternalSimilarity(Similarity):
                 denseMatrix = self.vectorToDense(reqVector)
                 simNum = self.checkSimilarity(denseMatrix)
                 simArr.append(simNum) 
-            
+
             weightSum = 0.3*simArr[0] + 0.2*simArr[1] + 0.5*simArr[2]
             weightSum = 0.3333*simArr[0] + 0.1667*simArr[1] + 0.5*simArr[2]
-
+            weightSum = 0.3*simArr[0] + 0.2*simArr[1] + 0.5*simArr[2]
+            weightSum = 0.3333*simArr[0] + 0.1667*simArr[1] + 0.5*simArr[2]
             
             sim.append([])
             sim[x].append(arr[0])
