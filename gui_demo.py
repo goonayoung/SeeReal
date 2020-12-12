@@ -403,7 +403,7 @@ class MyApp(QWidget):
             try:
                 self.outputnum = int(self.qle3.text())
             except:
-                QMessageBox.about(self, '결과개수오류','숫자를 입력해 주세요.')
+                QMessageBox.warning(self, '경고', '숫자를 입력해 주세요.',)
                 self.outputnum = ''
         else:
             self.qle3.setText('1')
@@ -480,9 +480,7 @@ class MyApp(QWidget):
         self.table.setColumnWidth(2, 160)
         
         
-    def Search_clicked(self):
-        QMessageBox.about(self, "message", "유사성이 없는 테스트케이스는 빨간색으로 표시됩니다.")
-        
+    def Search_clicked(self):    
         self.moreCnt = 0
         self.loopCnt = 0
         outputnum = self.outputnum
@@ -506,6 +504,7 @@ class MyApp(QWidget):
         if (inputData == ['','','',''] or inputData == ['', '', '']):
             self.inputIsEmpty()
         else:
+            QMessageBox.about(self, "message", "유사성이 없는 테스트케이스는 빨간색으로 표시됩니다.")
             self.outputTable.clearContents()
 
             if (column == 3):
