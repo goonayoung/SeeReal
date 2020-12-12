@@ -283,8 +283,6 @@ class ExternalSimilarity(Similarity):
          
         return tcSimilarity
 
-
-
 class MyApp(QWidget):
 
     def __init__(self):
@@ -371,10 +369,10 @@ class MyApp(QWidget):
         hbox.addWidget(self.setBtn)
         groupbox.setLayout(hbox)
         
-
         return groupbox
 
     def Set_clicked(self):       
+        setCnt = 0
         if(self.groupbox1.isChecked()):
             self.cb1.currentTextChanged
             self.cb2.currentTextChanged
@@ -386,7 +384,8 @@ class MyApp(QWidget):
             self.SearchR23 = int(self.cb2.currentText()[4:])
 
             if(self.SearchR13>self.SearchR23):
-                QMessageBox.about(self, '범위설정 오류', '범위를 다시 설정해주세요.')
+                QMessageBox.warning(self, '범위설정 오류', '범위를 다시 설정해주세요.')
+                setCnt = setCnt - 1
             else:
                 pass
         else:
@@ -397,25 +396,20 @@ class MyApp(QWidget):
             self.SearchR22 = 2
             self.SearchR23 = 14
             
-            
-        
+                    
         if(self.groupbox2.isChecked()):
             try:
                 self.outputnum = int(self.qle3.text())
             except:
                 QMessageBox.warning(self, '경고', '숫자를 입력해 주세요.',)
-                self.outputnum = ''
+                setCnt = setCnt - 1
         else:
             self.qle3.setText('1')
             self.outputnum = int(self.qle3.text())
-            
-        if (isinstance(self.SearchR11, int) & isinstance(self.outputnum, int)):
-            QMessageBox.about(self, 'setting', '설정 되었습니다.')
-            
+                     
+        if(setCnt >= 0):
+            QMessageBox.about(self, "message", "설정되었습니다.")
         
-        
-
-
     def Input(self):
         groupbox = QGroupBox('Input')
 
